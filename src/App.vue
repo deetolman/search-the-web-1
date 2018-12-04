@@ -4,6 +4,7 @@
       <img src="./assets/logo.png">
       <nav>
         <RouterLink to="/">Home</RouterLink>
+        <RouterLink to="/news">News</RouterLink>
       </nav>
     </header>
 
