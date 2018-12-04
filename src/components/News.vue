@@ -1,8 +1,12 @@
 <template>
     <section>
         <h2>News</h2>
+           
+        <NewsSearch :onSearch="handleSearch" :search="search"/>
+
+        <Loader :loading="loading"/>
+
         <div>
-            <NewsSearch :onSearch="handleSearch" :search="search"/>
             <ul>
                 <NewsItem v-for="(newsItem, i) in news"
                     :key="i"
@@ -15,19 +19,23 @@
 
 <script>
 import api from '../services/api.js';
-import NewsItem from './NewsItem';
 import NewsSearch from './NewsSearch';
+import NewsItem from './NewsItem';
+import Loader from './Loader';
 
 export default {
     data() {
+        const search = this.$route.query.search;
         return {
             news: null,
-            search: decodeURIComponent(this.$route.query.search),
+            loading: false,
+            search: search ? decodeURIComponent(search) : '',
         };
     },
     components: {
         NewsItem,
-        NewsSearch
+        NewsSearch,
+        Loader
     },
     created() {
         this.searchNews();
@@ -36,23 +44,23 @@ export default {
         $route(newRoute, oldRoute) {
             const newSearch = newRoute.query.search;
             const oldSearch = oldRoute.query.search;
-            // let newPage = newRoute.query.page;
-            // const oldPage = oldRoute.query.page;
             if(newSearch === oldSearch) return;
-            if(newSearch !== oldSearch) {
-                // newPage = 1;
-            }
+            this.search = decodeURIComponent(newSearch);
+            this.searchNews();
         }
     },
     methods: {
         handleSearch(search) {
             this.search = search || '';
+            this.searchNews();
         },
         searchNews() {
+            this.loading = true;
+
             api.getNews(this.search)
                 .then(response => {
-                    console.log('response', response.articles);
                     this.news = response.articles;
+                    this.loading = false;
                 });
         }
     }
