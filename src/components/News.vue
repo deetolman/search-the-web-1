@@ -6,6 +6,10 @@
 
         <Loader :loading="loading"/>
 
+        <pre v-show="error">
+            {{error}}
+        </pre>
+
         <div>
             <ul>
                 <NewsItem v-for="(newsItem, i) in news"
@@ -29,6 +33,7 @@ export default {
         return {
             news: null,
             loading: false,
+            error: null,
             search: search ? decodeURIComponent(search) : '',
         };
     },
@@ -56,10 +61,16 @@ export default {
         },
         searchNews() {
             this.loading = true;
+            this.error = null;
 
             api.getNews(this.search)
                 .then(response => {
                     this.news = response.articles;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    this.error = err.message;
+                    this.news = null;
                     this.loading = false;
                 });
         }
