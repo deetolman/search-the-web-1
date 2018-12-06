@@ -61,6 +61,7 @@ export default {
         },
         searchNews() {
             this.loading = true;
+            if(this.search === '') return;
             this.error = null;
 
             api.getNews(this.search)
